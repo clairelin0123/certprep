@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 export default function Footer() {
   return (
     <footer className="border-t border-gray-200 bg-gray-50 py-8 text-center text-sm text-gray-500">
@@ -6,6 +8,10 @@ export default function Footer() {
         <p className="mt-1">
           Not affiliated with IMA or any certification body.
         </p>
+        <div className="mt-2 flex justify-center gap-4">
+          <Link href="/privacy" className="hover:text-blue-600">Privacy Policy</Link>
+          <Link href="/resources" className="hover:text-blue-600">Resources</Link>
+        </div>
       </div>
     </footer>
   );
