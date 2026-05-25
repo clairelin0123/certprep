@@ -15,9 +15,18 @@ interface QuizQuestion {
 interface QuizEngineProps {
   questions: QuizQuestion[];
   topicName: string;
+  topicId?: string;
+  topicSlug?: string;
+  partSlug?: string;
 }
 
-export default function QuizEngine({ questions, topicName }: QuizEngineProps) {
+export default function QuizEngine({
+  questions,
+  topicName,
+  topicId,
+  topicSlug,
+  partSlug,
+}: QuizEngineProps) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [selected, setSelected] = useState<number | null>(null);
   const [answered, setAnswered] = useState(false);
@@ -65,6 +74,28 @@ export default function QuizEngine({ questions, topicName }: QuizEngineProps) {
     setSelected(null);
     setAnswered(false);
   };
+
+  // Save quiz attempt when finished
+  useEffect(() => {
+    if (!finished) return;
+    if (!topicId || !topicSlug || !partSlug) return;
+
+    const percentage = Math.round((score / questions.length) * 100);
+    fetch("/api/quiz-attempts", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        topicId,
+        topicSlug,
+        partSlug,
+        score,
+        total: questions.length,
+        percentage,
+      }),
+    }).catch(() => {
+      // Silently fail for guests
+    });
+  }, [finished, topicId, topicSlug, partSlug, score, questions.length]);
 
   const getOptionClass = (index: number) => {
     const base = "w-full rounded-lg border p-4 text-left transition";

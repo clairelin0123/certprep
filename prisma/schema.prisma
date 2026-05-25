@@ -7,6 +7,46 @@ datasource db {
   provider = "postgresql"
 }
 
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String    @unique
+  emailVerified DateTime?
+  image         String?
+  accounts      Account[]
+  sessions      Session[]
+  examAttempts  ExamAttempt[]
+  quizAttempts  QuizAttempt[]
+  savedQuestionIds Json?
+  createdAt     DateTime  @default(now())
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
 model Exam {
   id    String @id @default(cuid())
   name  String
@@ -48,4 +88,32 @@ model Question {
   explanation  String
   difficulty   String   @default("medium")
   createdAt    DateTime @default(now())
+}
+
+model ExamAttempt {
+  id             String   @id @default(cuid())
+  userId         String?
+  user           User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  partSlug       String
+  score          Int
+  total          Int
+  percentage     Int
+  passed         Boolean
+  timeSpent      Int
+  answers        Json
+  topicBreakdown Json
+  completedAt    DateTime @default(now())
+}
+
+model QuizAttempt {
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  topicId     String
+  topicSlug   String
+  partSlug    String
+  score       Int
+  total       Int
+  percentage  Int
+  completedAt DateTime @default(now())
 }

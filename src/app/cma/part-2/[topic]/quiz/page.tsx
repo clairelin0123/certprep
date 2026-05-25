@@ -49,7 +49,13 @@ export default async function QuizPage({ params }: Props) {
         &gt; Quiz
       </div>
 
-      <QuizEngine questions={questions} topicName={topic.name} />
+      <QuizEngine
+        questions={questions}
+        topicName={topic.name}
+        topicId={topic.id}
+        topicSlug={topicSlug}
+        partSlug="part-2"
+      />
     </div>
   );
 }
