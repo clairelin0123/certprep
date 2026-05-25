@@ -1,0 +1,51 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Exam {
+  id    String @id @default(cuid())
+  name  String
+  slug  String @unique
+  parts Part[]
+}
+
+model Part {
+  id     String  @id @default(cuid())
+  examId String
+  exam   Exam    @relation(fields: [examId], references: [id])
+  name   String
+  slug   String
+  number Int
+  topics Topic[]
+
+  @@unique([examId, slug])
+}
+
+model Topic {
+  id        String     @id @default(cuid())
+  partId    String
+  part      Part       @relation(fields: [partId], references: [id])
+  name      String
+  slug      String
+  weight    Int
+  questions Question[]
+
+  @@unique([partId, slug])
+}
+
+model Question {
+  id           String   @id @default(cuid())
+  topicId      String
+  topic        Topic    @relation(fields: [topicId], references: [id])
+  text         String
+  options      Json
+  correctIndex Int
+  explanation  String
+  difficulty   String   @default("medium")
+  createdAt    DateTime @default(now())
+}
