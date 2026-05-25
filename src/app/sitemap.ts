@@ -1,7 +1,25 @@
 import type { MetadataRoute } from "next";
-import { prisma } from "@/lib/db";
 
-export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
+const TOPICS = {
+  "part-1": [
+    "external-financial-reporting",
+    "planning-budgeting-forecasting",
+    "performance-management",
+    "cost-management",
+    "internal-controls",
+    "technology-analytics",
+  ],
+  "part-2": [
+    "financial-statement-analysis",
+    "corporate-finance",
+    "decision-analysis",
+    "risk-management",
+    "investment-decisions",
+    "professional-ethics",
+  ],
+};
+
+export default function sitemap(): MetadataRoute.Sitemap {
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://certprep.study";
 
   const staticPages: MetadataRoute.Sitemap = [
@@ -12,27 +30,23 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${siteUrl}/cma/saved-mistakes`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.4 },
   ];
 
-  const topics = await prisma.topic.findMany({
-    include: { part: true },
-  });
-
-  const topicPages: MetadataRoute.Sitemap = topics.flatMap((topic) => {
-    const partSlug = topic.part.slug;
-    return [
-      {
-        url: `${siteUrl}/cma/${partSlug}/${topic.slug}`,
-        lastModified: new Date(),
-        changeFrequency: "weekly" as const,
-        priority: 0.7,
-      },
-      {
-        url: `${siteUrl}/cma/${partSlug}/${topic.slug}/quiz`,
-        lastModified: new Date(),
-        changeFrequency: "weekly" as const,
-        priority: 0.6,
-      },
-    ];
-  });
+  const topicPages: MetadataRoute.Sitemap = Object.entries(TOPICS).flatMap(
+    ([partSlug, topics]) =>
+      topics.flatMap((topicSlug) => [
+        {
+          url: `${siteUrl}/cma/${partSlug}/${topicSlug}`,
+          lastModified: new Date(),
+          changeFrequency: "weekly" as const,
+          priority: 0.7,
+        },
+        {
+          url: `${siteUrl}/cma/${partSlug}/${topicSlug}/quiz`,
+          lastModified: new Date(),
+          changeFrequency: "weekly" as const,
+          priority: 0.6,
+        },
+      ])
+  );
 
   return [...staticPages, ...topicPages];
 }
