@@ -16,6 +16,15 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
   session: {
     strategy: "jwt",
   },
+  debug: true,
+  logger: {
+    error(error) {
+      console.error("[auth][error]", error);
+    },
+    warn(code) {
+      console.warn("[auth][warn]", code);
+    },
+  },
   callbacks: {
     async jwt({ token, user }) {
       if (user) {
