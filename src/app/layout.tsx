@@ -63,8 +63,19 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
+  const adsensePubId = process.env.NEXT_PUBLIC_ADSENSE_PUB_ID;
+
   return (
     <html lang="en">
+      <head>
+        {adsensePubId && (
+          <script
+            async
+            src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${adsensePubId}`}
+            crossOrigin="anonymous"
+          />
+        )}
+      </head>
       <body className="flex min-h-screen flex-col bg-white text-gray-900 antialiased">
         <Navbar />
         <main className="flex-1">{children}</main>

@@ -11,6 +11,9 @@ export default function Navbar() {
           <Link href="/cma" className="hover:text-blue-700">
             CMA Exam
           </Link>
+          <Link href="/resources" className="hover:text-blue-700">
+            Resources
+          </Link>
           <Link href="/cma/saved-mistakes" className="hover:text-blue-700">
             Saved Mistakes
           </Link>
